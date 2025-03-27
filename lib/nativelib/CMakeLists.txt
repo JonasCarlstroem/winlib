@@ -7,7 +7,7 @@ project(nativeLib
 add_library(nativeLib INTERFACE)
 add_library(natlib::nativeLib ALIAS nativeLib)
 
-target_sources(nativeLib PRIVATE src "include/natlib.h")
+target_sources(nativeLib PRIVATE src)
 
 target_compile_features(nativeLib INTERFACE cxx_std_17)
 
@@ -24,7 +24,7 @@ install(TARGETS nativeLib EXPORT nativeLib-config)
 
 install(
 	EXPORT nativeLib-config
-	NAMESPACE natlib::
+	NAMESPACE nat::
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/cmake/nativelib
 )
 

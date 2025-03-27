@@ -9,6 +9,7 @@ using namespace nat;
 
 int main()
 {
+	base_color clr(colors::darkgrey);
 	cout << "Hello CMake." << endl;
 	return 0;
 }

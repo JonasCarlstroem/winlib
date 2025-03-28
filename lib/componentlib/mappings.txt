@@ -1,1 +1,2 @@
 include\comp\label.xml:src/label.cpp
+include\comp\text_box.xml:src/text_box.cpp

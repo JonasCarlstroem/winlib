@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ui>
+  <window id="win" width="800" height="600">
+    <header id="h" width="200">testing testing</header>
+  </window>
+</ui>

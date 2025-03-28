@@ -1,7 +1,6 @@
 #pragma once
 
-namespace ctrl
-{
+namespace comp {
     enum button_type
     {
         invalid,

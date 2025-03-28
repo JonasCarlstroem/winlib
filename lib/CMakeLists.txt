@@ -4,18 +4,8 @@ project(winLib
 		VERSION 1.0.0
 		LANGUAGES CXX)
 
-include("G:/Dev/vcpkg/scripts/buildsystems/vcpkg.cmake")
-find_package(tinyxml2 CONFIG REQUIRED)
-
-add_executable(generator "gen/generator.cpp")
-target_link_libraries(generator PRIVATE tinyxml2::tinyxml2)
-
-set_target_properties(generator 
-	PROPERTIES CMAKE_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/gen
-)
-
 add_subdirectory(nativelib)
-add_subdirectory(controllib)
+add_subdirectory(componentlib)
 add_subdirectory(utilitylib)
 
 add_library(winLib INTERFACE winlib.h)
@@ -25,17 +15,12 @@ target_compile_features(winLib INTERFACE cxx_std_17)
 include(GNUInstallDirs)
 
 target_link_libraries(winLib
-		INTERFACE tinyxml2::tinyxml2
-)
-
-target_link_libraries(winLib
 		INTERFACE natlib::nativeLib
 		INTERFACE util::utilityLib
-		INTERFACE ctrl::controlLib
-		INTERFACE tinyxml2::tinyxml2
+		INTERFACE comp::componentLib
 )
 
-target_link_libraries(controlLib
+target_link_libraries(componentLib
 		INTERFACE natlib::nativeLib
 		INTERFACE util::utilityLib
 )

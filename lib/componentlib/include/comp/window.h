@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ctrl
+namespace comp
 {
     class window : public base_window
     {

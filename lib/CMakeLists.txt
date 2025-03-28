@@ -10,6 +10,10 @@ find_package(tinyxml2 CONFIG REQUIRED)
 add_executable(generator "gen/generator.cpp")
 target_link_libraries(generator PRIVATE tinyxml2::tinyxml2)
 
+set_target_properties(generator 
+	PROPERTIES CMAKE_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/gen
+)
+
 add_subdirectory(nativelib)
 add_subdirectory(controllib)
 add_subdirectory(utilitylib)

@@ -7,7 +7,7 @@
 #include <vector>
 #include "include/comp/ui_manager.h"
 
-#define INCLUDE(name) "#include \"#name\""
+#define INCLUDE(name) "#include "#name
 
 using namespace tinyxml2;
 using namespace std;
@@ -20,6 +20,34 @@ const string OUTPUT_FILE = "src/ui_components.cpp";
 
 string get_base_name(const string& path) {
     return fs::path(path).stem().string();
+}
+
+void write_source_file(include_list& includes, statement_list& binding_functions, statement_list& all_binding_calls) {
+    ofstream out(OUTPUT_FILE);
+    if (!out) {
+        cerr << "Error writing file..." << endl;
+        return;
+    }
+
+    out << INCLUDE("ui_manager") << endl;
+    for (const auto& incl : includes) {
+        out << incl << endl;
+    }
+    
+    out << endl;
+
+    for (const auto& func : binding_functions) {
+        out << func << endl;
+    }
+
+    out << "void bind_all_ui(ui_manager& manager) {" << endl;
+    for (const auto& call : all_binding_calls) {
+        out << call << endl;
+    }
+
+    out << "}" << endl;
+
+    cout << "Generated source file: " << OUTPUT_FILE << endl;
 }
 
 void generate_bindings(const std::string& mappingFile) {
@@ -94,13 +122,15 @@ void generate_bindings(const std::string& mappingFile) {
         outFile.close();*/
     }
 
-    ofstream out(OUTPUT_FILE);
-    if (!out) {
-        cerr << "Error creating file: " << OUTPUT_FILE << endl;
-    }
+    write_source_file(includes, binding_functions, all_bind_calls);
 
-    string t = INCLUDE("ui_manager.h");
-    out << "#include \"ui_manager.h\"\n";
+    //ofstream out(OUTPUT_FILE);
+    //if (!out) {
+    //    cerr << "Error creating file: " << OUTPUT_FILE << endl;
+    //}
+
+    //string t = INCLUDE("ui_manager.h");
+    //out << "#include \"ui_manager.h\"\n";
 
     cout << "Generated successfully!\n";
 }

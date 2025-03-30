@@ -1,3 +1,5 @@
-<label id="lbl">
-  
-</label>
+<template>
+  <label id="lbl">
+
+  </label>
+</template>

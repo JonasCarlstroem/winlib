@@ -57,6 +57,8 @@ void generate_bindings(const std::string& mappingFile) {
     }
 
     include_list includes;
+    statement_list member_vars;
+    statement_list registrations;
     statement_list binding_functions;
     statement_list all_bind_calls;
     
@@ -76,36 +78,38 @@ void generate_bindings(const std::string& mappingFile) {
             return;
         }
 
-        string baseName = get_base_name(xmlFile);
-        //string cppFile = fs::path(baseName + ".cpp").string();
+        string base_name = get_base_name(xmlFile);
 
-        //ofstream outFile(cppFile);
-        //if (!outFile.is_open()) {
-        //    cerr << "Error opening file " << cppFile << endl;
-        //    return;
+        //if (base_name.find('_') > 0) {
+        //    for (auto& c = base_name.begin(); c != base_name.end(); ++c) {
+        //        if (*c == '_') {
+        //            *c = '-';
+        //        }
+        //    }
         //}
 
-        //outFile << "#include \"ui_manager.h\"\n";
-        //outFile << "#include \"" << baseName << ".h\"\n\n";
-        //outFile << "void Bind" << baseName << "UI() {\n";
-
-        XMLElement* root = doc.FirstChildElement(baseName.c_str());
+        XMLElement* root = doc.FirstChildElement("template");
         if (!root) {
             cerr << "Error: No <window> root element in " << xmlFile << "\n";
             return;
         }
 
-        string file_stem = fs::path(xmlFile).stem().string();
-        string bind_function = "void bind_" + file_stem + "_ui(ui_manager& manager) {\n";
+        //string file_stem = fs::path(xmlFile).stem().string();
+        string bind_function = "void bind_" + base_name + "_ui(ui_manager& manager) {\n";
 
         for (XMLElement* el = root->FirstChildElement(); el;  el = el->NextSiblingElement()) {
             string tag = el->Name();
             string cpp_class = tag;
-            string comp_id = el->Attribute("id") ? el->Attribute("id") : "unknown";
+            string comp_id = el->Attribute("id") ? el->Attribute("id") : "";
 
-            includes.insert("#include \"" + tag + ".h\"");
+            if (!comp_id.empty()) {
+                includes.insert("#include \"" + base_name + ".h\"");
+                member_vars.push_back("\tstd::shared_ptr<" + base_name + "> " + comp_id + ";");
+                registrations.push_back("\t" + comp_id + " = std::make_shared<" + base_name + ">(\"" + comp_id + "\");");
+                registrations.push_back("\tmanager.register_element(" + comp_id + ");");
+            }
 
-            bind_function += "  auto " + comp_id + " = std::make_shared<" + cpp_class + ">(\"" + comp_id + "\");\n";
+            bind_function += "\tauto " + comp_id + " = std::make_shared<" + cpp_class + ">(\"" + comp_id + "\");\n";
 
             //if (id) {
             //    outFile << "    auto " << id << " = manager.find_ui_element(\"" << id << "\");\n";
@@ -116,7 +120,7 @@ void generate_bindings(const std::string& mappingFile) {
         bind_function += "}\n";
 
         binding_functions.push_back(bind_function);
-        all_bind_calls.push_back("  bind_" + file_stem + "_ui(manager);");
+        all_bind_calls.push_back("  bind_" + base_name + "_ui(manager);");
 
         /*outFile << "}\n";
         outFile.close();*/

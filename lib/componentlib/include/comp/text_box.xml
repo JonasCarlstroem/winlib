@@ -1,3 +1,5 @@
-<text-box id="txt">
+<template>
+  <text-box id="txt">
 
-</text-box>
+  </text-box>
+</template>

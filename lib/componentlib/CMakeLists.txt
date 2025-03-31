@@ -7,7 +7,7 @@ project(componentLib
 include("G:/Dev/vcpkg/scripts/buildsystems/vcpkg.cmake")
 find_package(tinyxml2 CONFIG REQUIRED)
 
-add_executable(generator "generator.cpp")
+add_executable(generator "generator.cpp" "string_output.h")
 set_property(TARGET generator PROPERTY CXX_STANDARD 17)
 target_link_libraries(generator PRIVATE tinyxml2::tinyxml2)
 

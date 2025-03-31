@@ -5,21 +5,120 @@
 #include <fstream>
 #include <filesystem>
 #include <vector>
+#include "string_output.h"
 #include "include/comp/ui_manager.h"
+#include "include/comp/ui_element.h"
 
 #define INCLUDE(name) "#include "#name
 
 using namespace tinyxml2;
 using namespace std;
+using namespace comp;
 namespace fs = filesystem;
 
 typedef unordered_set<string> include_list;
 typedef vector<string> statement_list;
 
 const string OUTPUT_FILE = "src/ui_components.cpp";
+const string OUTPUT_DIR = "bindings";
 
 string get_base_name(const string& path) {
     return fs::path(path).stem().string();
+}
+
+ui_element* parse_element(XMLElement* xml) {
+    if (!xml) return nullptr;
+
+    ui_element* el = new ui_element();
+    el->type() = xml->Name();
+    el->id() = xml->Attribute("id") ? xml->Attribute("id") : "";
+
+    for (const XMLAttribute* attr = xml->FirstAttribute(); attr; attr = attr->Next()) {
+        el->set_attribute(attr->Name(), attr->Value());
+    }
+
+    XMLElement* xml_child = xml->FirstChildElement();
+    while (xml_child) {
+        if (false) {
+
+        }
+        else {
+            el->add_child(parse_element(xml_child));
+        }
+
+        xml_child = xml_child->NextSiblingElement();
+    }
+
+    return el;
+}
+
+string generate_header_content(string class_name, ui_element* el) {
+    if (!el) return;
+
+    ostringstream str;
+    const char* t = "t";
+    str << _pragma << "once" << _newline;
+    str << _include << "\"ui_element.h\"" << _newline<2>;
+    str << _class << class_name << _inherit << "public" << _space << "ui_element" << _open_bracket << _newline;
+    str << "public:" << _newline;
+
+    for (const auto& child : el->get_children()) {
+        str << _tab << child->type() << "* " << child->id() << ";" << _newline;
+    }
+
+    for (const auto& child : el->get_children()) {
+        for (const auto& attr : child->get_attributes()) {
+            if (attr.first.find("on") == 0) {
+                str << _tab << _virtual << "void" << _space << attr.second << _openclose_parenthesis<false> << _space << _openclose_brackets << _newline;
+            }
+        }
+    }
+
+    str << _tab << class_name << _openclose_parenthesis << _newline;
+    str << _closing_bracket << _newline;
+
+    return str.str();
+}
+
+string generate_source_content(string class_name, ui_element* el) {
+    if (!el) return;
+
+    ostringstream str;
+    str << _include << _quote << class_name << ".h\"" << _newline<2>;
+    str << class_name << "::" << class_name << _openclose_parenthesis;
+
+    return str.str();
+}
+
+void generate_base_class(ui_element* root, ofstream& output_header, ofstream& output_source) {
+    if (!root) return;
+
+    string class_name = "_" + root->type();
+    string h_content = generate_header_content(class_name, root);
+    string cpp_content = generate_source_content(class_name, root);
+    ostringstream oos;
+
+    oos << _pragma << "once" << _newline;
+    oos << "#include \"ui_element.h\"" << _newline<2>;
+    oos << _class << class_name << _inherit << "public" << _space << "ui_element" << _open_bracket << _newline;
+    oos << "public:" << _newline;
+
+    for (const auto& child : root->get_children()) {
+        oos << _tab << child->type() << "* " << child->id() << ";" << _newline;
+    }
+
+    for (const auto& child : root->get_children()) {
+        for (const auto& attr : child->get_attributes()) {
+            if (attr.first.find("on") == 0) {
+                oos << _tab << _virtual << "void" << _space << attr.second << _openclose_parenthesis << _openclose_brackets << _newline;
+            }
+        }
+    }
+
+    oos << _tab << class_name << _openclose_parenthesis << _newline;
+    oos << _closing_bracket << _newline;
+
+    string header = oos.str();
 }
 
 void write_source_file(include_list& includes, statement_list& binding_functions, statement_list& all_binding_calls) {
@@ -80,21 +179,20 @@ void generate_bindings(const std::string& mappingFile) {
 
         string base_name = get_base_name(xmlFile);
 
-        //if (base_name.find('_') > 0) {
-        //    for (auto& c = base_name.begin(); c != base_name.end(); ++c) {
-        //        if (*c == '_') {
-        //            *c = '-';
-        //        }
-        //    }
-        //}
+        ui_element* root_el = parse_element(doc.FirstChildElement("template")->FirstChildElement());
+        fs::path out_h_f = fs::path("bindings") / fs::path("_" + base_name + ".h");
+        fs::path out_cpp_f = fs::path("bindings") / fs::path("_" + base_name + ".cpp");
+
+        ofstream out_h(out_h_f);
+        ofstream out_cpp(out_cpp_f);
+        generate_base_class(root_el, out_h, out_cpp);
 
         XMLElement* root = doc.FirstChildElement("template");
         if (!root) {
-            cerr << "Error: No <window> root element in " << xmlFile << "\n";
+            cerr << "Error: No <template> root element in " << xmlFile << "\n";
             return;
         }
 
-        //string file_stem = fs::path(xmlFile).stem().string();
         string bind_function = "void bind_" + base_name + "_ui(ui_manager& manager) {\n";
 
         for (XMLElement* el = root->FirstChildElement(); el;  el = el->NextSiblingElement()) {
@@ -110,10 +208,6 @@ void generate_bindings(const std::string& mappingFile) {
             }
 
             bind_function += "\tauto " + comp_id + " = std::make_shared<" + cpp_class + ">(\"" + comp_id + "\");\n";
-
-            //if (id) {
-            //    outFile << "    auto " << id << " = manager.find_ui_element(\"" << id << "\");\n";
-            //}
             bind_function += "  manager.register_element(" + comp_id + ");\n";
         }
 
@@ -121,9 +215,6 @@ void generate_bindings(const std::string& mappingFile) {
 
         binding_functions.push_back(bind_function);
         all_bind_calls.push_back("  bind_" + base_name + "_ui(manager);");
-
-        /*outFile << "}\n";
-        outFile.close();*/
     }
 
     write_source_file(includes, binding_functions, all_bind_calls);

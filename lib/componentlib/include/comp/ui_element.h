@@ -8,14 +8,48 @@ using namespace std;
 
 typedef function<void()> handler;
 typedef unordered_map<string, handler> handlers;
-typedef unordered_map<string, string> attribute_list;
+
+using attribute_list = unordered_map<string, string>;
+
+class attrib_list {
+private:
+    unordered_map<string, const char*> _attributes;
+
+public:
+    void add(string key, string value) {
+        _attributes[key] = value.c_str();
+    }
+
+    template<class T>
+    T get(string key) {
+        return reinterpret_cast<T>(_attributes[key]);
+    }
+
+    string operator[](string key) {
+        return _attributes[key];
+    }
+
+    template<class T>
+    T& operator[](string key) {
+        return get<T>(key);
+    }
+
+    auto begin() {
+        return _attributes.begin();
+    }
+
+    auto end() {
+        return _attributes.end();
+    }
+};
 
 namespace comp {
     class ui_element {
     protected:
-        string _id;
-        string _type;
-        attribute_list _attributes;
+        string  _id, _type;
+        int     _width, _height;
+
+        attrib_list _attributes;
         vector<ui_element*> _children;
         handlers _event_handlers;
 
@@ -25,9 +59,11 @@ namespace comp {
 
         string& id() { return _id; }
         string& type() { return _type; }
+        int width() { return _attributes.get<int>("width"); }
+        int height() { return _attributes.get<int>("height"); }
 
-        void set_attribute(string name, string value) {
-            _attributes[name] = value;
+        void set_attribute(string name, string value, string def_val = "") {
+            _attributes[name] = (value.empty() ? def_val : value);
         }
 
         void add_child(ui_element* child) {
@@ -39,7 +75,7 @@ namespace comp {
         }
 
         vector<ui_element*> get_children() { return _children; }
-        attribute_list get_attributes() { return _attributes; }
+        attrib_list get_attributes() { return _attributes; }
 
         void on(const string& evName, handler evHandler) {
             _event_handlers[evName] = evHandler;
@@ -51,19 +87,4 @@ namespace comp {
             }
         }
     };
-
-    typedef unordered_map<string, shared_ptr<ui_element>> ui_element_registry;
-    ui_element_registry ui_registry;
-
-    void register_ui_element(const string& id, shared_ptr<ui_element> el) {
-        ui_registry[id] = el;
-    }
-
-    shared_ptr<ui_element> find_ui_element(const string& id) {
-        auto it = ui_registry.find(id);
-        if (it != ui_registry.end()) {
-            return it->second;
-        }
-        return nullptr;
-    }
 }

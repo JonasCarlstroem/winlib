@@ -1,5 +1,5 @@
-<template>
-  <text-box id="txt">
-
-  </text-box>
-</template>
+<text-box id="txt">
+  <text>
+    default text
+  </text>
+</text-box>

@@ -1,5 +1,8 @@
-<template>
-  <label id="lbl">
-
-  </label>
-</template>
+<label 
+  id=""
+  width="0"
+  height="0">
+  <text>
+    default text
+  </text>
+</label>

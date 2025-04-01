@@ -1,9 +1,11 @@
 #include "ui_element.h"
 
 namespace comp {
+    typedef unordered_map<string, shared_ptr<ui_element>> ui_registry;
+
     class ui_manager {
     private:
-        ui_element_registry registry;
+        ui_registry registry;
 
     public:
         void register_element(const string& id, shared_ptr<ui_element> el) {

@@ -1,0 +1,11 @@
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name>winlib XML file</Name>
+    <Description>XML UI file for winlib framework with associated XML schema.</Description>
+    <ProjectType>VC</ProjectType>
+    <DefaultName></DefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem ReplaceParameters="true">template.xml</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

@@ -4,16 +4,7 @@ project(componentLib
 		VERSION 1.0.0
 		LANGUAGES CXX)
 
-include("G:/Dev/vcpkg/scripts/buildsystems/vcpkg.cmake")
-find_package(tinyxml2 CONFIG REQUIRED)
-
-add_executable(generator "generator.cpp" "string_output.h")
-set_property(TARGET generator PROPERTY CXX_STANDARD 17)
-target_link_libraries(generator PRIVATE tinyxml2::tinyxml2)
-
-set_target_properties(generator 
-	PROPERTIES CMAKE_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
+add_subdirectory(generator)
 
 add_library(componentLib INTERFACE)
 add_library(comp::componentLib ALIAS componentLib)

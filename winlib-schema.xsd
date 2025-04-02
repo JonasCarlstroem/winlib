@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+  <!-- Base element properties -->
+  <xs:attributeGroup name="commonAttributes">
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="width" type="xs:integer" use="optional" />
+    <xs:attribute name="height" type="xs:integer" use="optional" />
+    <xs:attribute name="text" type="xs:string" use="optional" />
+  </xs:attributeGroup>
+
+  <!-- Text box elemenet -->
+  <xs:element name="text-box">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <!-- Allow nested elements -->
+        <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+      </xs:sequence>
+      <!-- Common attributes -->
+      <xs:attributeGroup ref="commonAttributes" />
+      <!-- Text box specific attribute -->
+      <xs:attribute name="placeholder" type="xs:string" use="optional" />
+      <!-- Events -->
+      <xs:attribute name="on_focus" type="xs:string" use="optional" />
+      <xs:attribute name="on_blur" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Label element -->
+  <xs:element name="label">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+      </xs:sequence>
+      <xs:attributeGroup ref="commonAttributes" />
+      <!-- Component specific attributes -->
+      <!--<xs:attribute name="text" type="xs:string" use="optional" />-->
+      <!-- Events -->
+      <xs:attribute name="on_change" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Button element -->
+  <xs:element name="button">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+      </xs:sequence>
+      <xs:attributeGroup ref="commonAttributes" />
+      <!-- Events -->
+      <xs:attribute name="on_click" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

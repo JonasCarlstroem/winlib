@@ -13,6 +13,7 @@ using attribute_list = unordered_map<string, string>;
 
 class attrib_list {
 private:
+    string _key;
     unordered_map<string, const char*> _attributes;
 
 public:
@@ -25,8 +26,18 @@ public:
         return reinterpret_cast<T>(_attributes[key]);
     }
 
-    string operator[](string key) {
-        return _attributes[key];
+    attrib_list& operator[](string key) {
+        this->_key = key;
+        return *this;
+    }
+
+    void operator=(string value) {
+        if (this->_attributes.count(_key) > 0) {
+            this->_attributes[_key] = value.c_str();
+        }
+        else {
+            this->_attributes.insert({ _key, value.c_str()});
+        }
     }
 
     template<class T>
@@ -54,8 +65,8 @@ namespace comp {
         handlers _event_handlers;
 
     public:
-        ui_element() : _id(""), _event_handlers() {}
-        explicit ui_element(const string& elId) : _id(elId) {}
+        ui_element() : _id(""), _type(""), _width(0), _height(0), _event_handlers() {}
+        explicit ui_element(const string& elId) : _id(elId), _type(""), _width(0), _height(0), _event_handlers() {}
 
         string& id() { return _id; }
         string& type() { return _type; }

@@ -6,8 +6,8 @@
 #include <filesystem>
 #include <vector>
 #include "string_output.h"
-#include "include/comp/ui_manager.h"
-#include "include/comp/ui_element.h"
+#include "../include/comp/ui_manager.h"
+#include "../include/comp/ui_element.h"
 
 #define INCLUDE(name) "#include "#name
 
@@ -37,20 +37,33 @@ string get_tag_name(const string& name) {
     return tag;
 }
 
-string get_tag(XMLElement* el) {
-    return el->Name();
+string get_tag(XMLElement* xml) {
+    return xml->Name();
 }
 
-string get_id(XMLElement* el) {
-    return el->Attribute("id");
+string get_id(XMLElement* xml) {
+    const XMLAttribute* attrib = xml->FindAttribute("id");
+    if (attrib == nullptr) {
+        throw exception("Error: missing required attribute 'id'");
+    }
+
+    return attrib->Value();
 }
 
-string get_width(XMLElement* el) {
-    return el->Attribute("width");
+string get_width(XMLElement* xml) {
+    const XMLAttribute* attr = xml->FindAttribute("width");
+    if (attr == nullptr)
+        return "";
+
+    return attr->Value();
 }
 
-string get_height(XMLElement* el) {
-    return el->Attribute("height");
+string get_height(XMLElement* xml) {
+    const XMLAttribute* attr = xml->FindAttribute("height");
+    if (attr == nullptr)
+        return "";
+
+    return attr->Value();
 }
 
 void extract_attributes(ui_element* el, XMLElement* xml) {
@@ -58,15 +71,6 @@ void extract_attributes(ui_element* el, XMLElement* xml) {
     el->set_attribute("id", get_id(xml));
     el->set_attribute("width", get_width(xml));
     el->set_attribute("height", get_height(xml));
-    //string type = get_tag(xml);
-    //if (!type.empty()) {
-    //    el->type() = type;
-    //}
-    //
-    //string id = get_id(xml);
-    //if (!id.empty()) {
-    //    el->id() = id;
-    //}
 }
 
 ui_element* parse_element(XMLElement* xml) {

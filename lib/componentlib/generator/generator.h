@@ -1,3 +1,5 @@
+#pragma once
+
 #include <tinyxml2.h>
 #include <unordered_set>
 #include <sstream>
@@ -75,7 +77,7 @@ void extract_attributes(ui_element* el, XMLElement* xml) {
 
 ui_element* parse_element(XMLElement* xml) {
     if (!xml) return nullptr;
-
+    
     ui_element* el = new ui_element();
     extract_attributes(el, xml);
     /*el->type() = xml->Name();
@@ -249,11 +251,11 @@ void generate_bindings(const std::string& mappingFile) {
         ofstream out_cpp(out_cpp_f);
         generate_base_class(string("_" + base_name), root_el, out_h, out_cpp);
 
-        XMLElement* root = doc.FirstChildElement("template");
-        if (!root) {
-            cerr << "Error: No <template> root element in " << xmlFile << "\n";
-            return;
-        }
+        //XMLElement* root = doc.FirstChildElement("template");
+        //if (!root) {
+        //    cerr << "Error: No <template> root element in " << xmlFile << "\n";
+        //    return;
+        //}
 
         //string bind_function = "void bind_" + base_name + "_ui(ui_manager& manager) {\n";
 
@@ -297,9 +299,9 @@ void generate_mapping_file(const string& xml_dir, const string& output_file) {
 
     for (const auto& entry : fs::directory_iterator(xml_dir)) {
         if (entry.path().extension() == ".xml") {
-            string base_name = entry.path().stem().string();
-            string p = entry.path().string();
-            mapping_file << p << ":src/" << base_name << ".cpp\n";
+            string cpp_file = string(entry.path().stem().string() + ".cpp");
+            string xml_file = entry.path().string();
+            mapping_file << xml_file << ":src/" << cpp_file << _newline;
         }
     }
 }
@@ -352,18 +354,4 @@ vector<flag> parse_flags(int argc, const char** argv) {
     }
 
     return flags;
-}
-
-int main(int argc, const char** argv) {
-    //tinyxml2::XMLDocument doc;
-    //if (doc.LoadFile("test.xml") != XML_SUCCESS) {
-    //    return -1;
-    //}
-    if (argc < 2) return -1;
-
-    //auto flags = parse_flags(argc, argv);
-
-    generate_mapping_file("include\\comp", "mappings.txt");
-    generate_bindings("mappings.txt");
-    return 0;
 }

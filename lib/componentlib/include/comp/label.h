@@ -1,8 +1,10 @@
 #pragma once
+#include <Windows.h>
+#include "_label.h"
 
 namespace comp
 {
-    class label : public control
+    class label : public _label
     {
     public:
         label(ihandle* parent);

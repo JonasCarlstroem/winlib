@@ -3,7 +3,7 @@
     <Name>winlib XML file</Name>
     <Description>XML UI file for winlib framework with associated XML schema.</Description>
     <ProjectType>VC</ProjectType>
-    <DefaultName></DefaultName>
+    <DefaultName>ui.xml</DefaultName>
   </TemplateData>
   <TemplateContent>
     <ProjectItem ReplaceParameters="true">template.xml</ProjectItem>

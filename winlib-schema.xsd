@@ -9,6 +9,15 @@
     <xs:attribute name="text" type="xs:string" use="optional" />
   </xs:attributeGroup>
 
+  <xs:element name="window">
+    <xs:complexType mixed="true">
+      <xs:sequence>
+        <xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+      </xs:sequence>
+      
+    </xs:complexType>
+  </xs:element>
+
   <!-- Text box elemenet -->
   <xs:element name="text-box">
     <xs:complexType mixed="true">

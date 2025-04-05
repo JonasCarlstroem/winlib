@@ -6,7 +6,7 @@
 
 ## **Planned features**
 
-- [ ] ###Live UI reloading
-- [ ] ###Live data binding generation
-- [ ] ###Property data bindings
-- [ ] ###Customized intellisense for custom attribute directives and dynamic UI generation
+- [ ] Live UI reloading
+- [ ] Live data binding generation
+- [ ] Dynamic property bindings
+- [ ] Customized intellisense for custom attribute directives and dynamic UI generation

@@ -2,5 +2,4 @@
 
 ### A simple c++ ui framework
 
-A personal education project
-
+*A personal education project*
